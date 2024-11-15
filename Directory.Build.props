@@ -1,0 +1,16 @@
+<Project DefaultTargets="Build">
+
+	<PropertyGroup>
+        <PlatformShortName Condition="'$(Platform)'=='Win32'">x86</PlatformShortName>
+        <PlatformShortName Condition="'$(Platform)'=='x64'">x64</PlatformShortName>
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<OutDir>$(SolutionDir)Build\bin\$(PlatformShortName)\$(Configuration)\</OutDir>
+		<IntDir>$(SolutionDir)Build\obj\$(ProjectName)\$(PlatformShortName)\$(Configuration)\</IntDir>
+	</PropertyGroup>
+
+	<PropertyGroup Label="Vcpkg">
+		<VcpkgInstalledDir>$(SolutionDir)vcpkg_installed\$(PlatformShortName)\</VcpkgInstalledDir>
+	</PropertyGroup>
+</Project>

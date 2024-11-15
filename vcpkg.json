@@ -1,0 +1,21 @@
+{
+  "name": "pcap-patrol",
+  "version": "0.0.0.1",
+  "dependencies": [
+	  {
+		"name": "gtest", 
+		"platform": "windows"
+	  },
+	  {
+		"name": "pcapplusplus", 
+		"platform": "windows"
+	  }
+  ],
+  "overrides": [
+    { 
+        "name": "gtest", 
+        "version": "1.15.2"
+    }
+  ],
+  "builtin-baseline": "8e7f6491ae3cae2f26eacadda80a45e548b2d9e8"
+}
