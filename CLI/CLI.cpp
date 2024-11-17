@@ -4,9 +4,29 @@
 #include <pcapplusplus/EthLayer.h>
 #include <pcapplusplus/IPv4Layer.h>
 #include <pcapplusplus/TcpLayer.h>
-#include <pcapplusplus/HttpLayer.h>
-#include <unordered_map>
-#include <vector>
+#include <pcapplusplus/DhcpLayer.h>
+#include <sstream>
+#include <iomanip>
+
+
+std::string getProtocolTypeAsString(pcpp::ProtocolType protocolType)
+{
+    switch (protocolType)
+    {
+    case pcpp::Ethernet:
+        return "Ethernet";
+    case pcpp::IPv4:
+        return "IPv4";
+    case pcpp::TCP:
+        return "TCP";
+    case pcpp::HTTPRequest:
+    case pcpp::HTTPResponse:
+        return "HTTP";
+    default:
+        return "Unknown";
+    }
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -40,23 +60,36 @@ int main(int argc, char* argv[])
             break;
         }
         nPacket++;
-
+        std::cout << "#" << nPacket << " Packet" << std::endl;
         // parse the raw packet into a parsed packet
         pcpp::Packet parsedPacket(&rawPacket);
 
-        pcpp::EthLayer* l1 = parsedPacket.getLayerOfType<pcpp::EthLayer>();
-        auto l2 = dynamic_cast<pcpp::IPv4Layer * >(l1->getNextLayer());
-        auto l3 = dynamic_cast<pcpp::TcpLayer*>(l2->getNextLayer());
-        //auto l4_req = dynamic_cast<pcpp::HttpRequestLayer*>(l3->getNextLayer());
-        //auto l4_res = dynamic_cast<pcpp::HttpResponseLayer*>(l3->getNextLayer());
+        for (auto* curLayer = parsedPacket.getFirstLayer(); curLayer != nullptr; curLayer = curLayer->getNextLayer())
+        {
+            std::cout
+                << "Layer type: " << getProtocolTypeAsString(curLayer->getProtocol()) << "; " // get layer type
+                << "Total data: " << curLayer->getDataLen() << " [bytes]; " // get total length of the layer
+                << "Layer data: " << curLayer->getHeaderLen() << " [bytes]; " // get the header length of the layer
+                << "Layer payload: " << curLayer->getLayerPayloadSize() << " [bytes]" // get the payload length of the layer (equals total length minus header length)
+                << std::endl;
+        }
 
-        std::string srcMac = l1->getSourceMac().toString();
-        std::string destMac = l1->getDestMac().toString();
+        //auto last = parsedPacket.getLastLayer();
+        //auto data = last->getData();
+        //auto dataLen = last->getDataLen();
 
-        std::string srcIPv4 = l2->getSrcIPv4Address().toString();
-        std::string destIPv4 = l2->getDstIPv4Address().toString();
+        //std::ostringstream hexOss;
+        //std::ostringstream oss;
+        //for (size_t i = 0; i < dataLen; ++i) {
+        //    hexOss << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(data[i]);
+        //    oss << static_cast<unsigned char>(data[i]);
+        //}
+
+        //std::cout << hexOss.str() << std::endl;
+        //std::cout << oss.str() << std::endl;
+
         
-    } while (true);
+    } while (true && nPacket <100);
 
     // close the pcap file
     reader.close();
